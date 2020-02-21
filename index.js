@@ -18,7 +18,7 @@ app.get("/tweets", async (req, res) => {
   // make sure they pass a string and not some bamboozle
   const q =
     typeof query.q === "string" && query.q.trim().length > 0
-      ? query.q
+      ? query.q.trim()
       : "puppies";
 
   let response = await fetch(`${TWITTER_BASE_URL}/search/tweets.json?q=${q}`, {
@@ -28,6 +28,20 @@ app.get("/tweets", async (req, res) => {
   });
   let data = await response.json();
   res.json(data);
+});
+
+app.get("/users/:user", async (req, res) => {
+  const param = new URLSearchParams(req.params).get("user");
+  const response = await fetch(
+    `${TWITTER_BASE_URL}/users/show.json?screen_name=${param}`,
+    {
+      headers: {
+        Authorization: `Bearer ${process.env.TWITTER_TOKEN}`
+      }
+    }
+  );
+  const user = await response.json();
+  res.json(user);
 });
 
 const server = app.listen(PORT, () => {
